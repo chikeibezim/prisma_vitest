@@ -1,5 +1,6 @@
 import { expect, test, vi } from 'vitest';
 import { createUser } from '../src/script';
+import prisma from '../libs/__mocks__/prisma';
 
 /*
     Mock the module found at ../libs/prisma
@@ -17,6 +18,8 @@ import { createUser } from '../src/script';
     the deeply nested properties
 */
 
+//we've created a prisma mock file under the __mocks__ folder.
+//Vitest will know that we want to use this mock file instead of the main prisma export
 
 vi.mock('../libs/prisma');
 
@@ -26,6 +29,9 @@ test('1 === 1', () => {
 
 test('createUser should return the generated user', async () => {
     const newUser = { email: "user2@prisma.io", name: 'Prisma Fan', password: 'chike'}
+    
+    //import mocked prisma and tell prisma how to behave
+    prisma.user.create.mockResolvedValue({ ...newUser, id: 2 })
     const user = await createUser(newUser);
     expect(user).toStrictEqual({ ...newUser, id: 2 })
 })
